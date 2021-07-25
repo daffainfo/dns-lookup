@@ -3,12 +3,12 @@ package main
 import (
 	"fmt"
 	"net"
+	"os"
+	"strings"
 )
 
 func main() {
-	var url string
-	fmt.Println("Input website")
-	fmt.Scanln(&url)
+	url := os.Args[1]
 	cname(url)
 	ip(url)
 	mx(url)
@@ -22,7 +22,7 @@ func cname(url string) {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(cname)
+	fmt.Printf("\n[CNAME] %s\n", cname)
 }
 
 func ip(url string) {
@@ -33,8 +33,9 @@ func ip(url string) {
 	if len(ips) == 0 {
 		fmt.Printf("no record\n")
 	}
+	fmt.Println()
 	for _, ip := range ips {
-		fmt.Printf("%s\n", ip.String())
+		fmt.Printf("[IP] %s\n\n", ip)
 	}
 }
 
@@ -45,7 +46,7 @@ func mx(url string) {
 	}
 
 	for _, mx := range mxs {
-		fmt.Printf("%s %v\n", mx.Host, mx.Pref)
+		fmt.Printf("[MX] %s %v\n", mx.Host, mx.Pref)
 	}
 }
 
@@ -57,8 +58,9 @@ func ns(url string) {
 	if len(nss) == 0 {
 		fmt.Printf("no record\n")
 	}
+	fmt.Println()
 	for _, ns := range nss {
-		fmt.Printf("%s\n", ns.Host)
+		fmt.Printf("[NS] %s\n", ns.Host)
 	}
 }
 
@@ -70,8 +72,12 @@ func txt(url string) {
 	if len(txts) == 0 {
 		fmt.Printf("no record\n")
 	}
+	fmt.Println()
 	for _, txt := range txts {
-		fmt.Printf("%s\n", txt)
+		if strings.Contains(txt, "v=DMARC1") {
+			fmt.Printf("[DMARC] %s\n", txt)
+			break
+		}
+		fmt.Printf("[TXT] %s\n", txt)
 	}
-
 }
